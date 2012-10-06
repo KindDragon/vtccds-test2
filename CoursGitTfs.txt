@@ -40,7 +40,12 @@ Difftool command : "C:/Program Files (x86)/p4merge/p4merge.exe" "$LOCAL" "$REMOT
 
 Rappels sur Git!
 ================
-TODO!!
+Git est :
+- un gestionnaire de contenu (et non de différence!)
+- stocké sous la forme d'un graphe acyclique d'objets
+- accessible avec des références
+
+Toute manipulation de Git ne fait que manipuler ce graphe (Ne jamais l'oublier et essayer de visualiser cela!!)
 
 
 Utilisation de Git-TFS:
@@ -137,6 +142,10 @@ Utilisation de Git
 git rebase -i HEAD~n (avec 'n' à remplacer par le nombre de commit qu'on veut réécrire)
 Note: Ne pas modifier des commits déjà partagés!!!!!!
 
+- Historique des opérations (et réparation des erreurs!) : 
+git reflog => voire l'historique des modification
+git branch MaBranche d995afd => creation d'une branche sur un commit (en indiquant son sha1)
+
 Aperçu de Git-TF
 ================
 - C'est du Java
@@ -167,3 +176,5 @@ Inconvénient:
 Conclusion
 Beaucoup d'avantages, quelques petits désagréments
 TFS est une solution d'archivage, Git est un outil servant à faciliter un développement
+
+PS : vous avez toutes les infos pour utiliser Git-tfs mais il vous reste à apprivoiser Git...
