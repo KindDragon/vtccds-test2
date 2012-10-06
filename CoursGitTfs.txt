@@ -113,11 +113,16 @@ git tfs shelve-list
 Ceux d'un autre utilisateur:
 git tfs shelve-list -u LOGIN_UTILISATEUR
 
+Créer une branche à partir d'un shelveset:
+git tfs unshelve MonShelveset MaBranche
 
-TODO : Récupérer un shelve => creation d'une branche!!!
+Créer un commit réservé de la branche courante:
+git tfs shelve MonShelveset
 
-
-
+Avantage de la branche Git sur le shelveset TFS :
+- on peut faire plusieurs commits
+- on connait le commit parent et voit exactement les modifications faites (là ou TFS présente seulement un état de fichier et on ne sait pas comment il serait mergé!)
+- mergeable plus facilement (moins sensible au modifications) 
 
 Utilisation de Git
 ==================
