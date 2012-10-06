@@ -38,16 +38,21 @@ Difftool : p4merge
 Difftool Path : C:/Program Files (x86)/p4merge/p4merge.exe
 Difftool command : "C:/Program Files (x86)/p4merge/p4merge.exe" "$LOCAL" "$REMOTE"
 
+Rappels sur Git!
+================
+TODO!!
+
+
 Utilisation de Git-TFS:
 =======================
 1. Clonage du dépôt TFS
 Commande de clone du dépot TFS avec historique (conseillé!):
 git tfs clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs
+ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
 
 Commande de clone du dépot TFS sans historique:
 git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs
+ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
 
 Utilisation du login/mdp
 login:snd\[LoginCodePlex]_cp
