@@ -97,13 +97,20 @@ git config --global alias.tfscommit '!sh -c "git tfs fetch ; git stash save ; gi
 Création d'une branche de TFS:
 ------------------------------
 Solution Facile :
-- Créer un nouveau dépot Git avec la seconde branche
+- Créer un nouveau dépot Git avec la seconde branche (cf clone vu précédement)
 - Inconvénients : on ne peut pas backporter des corrections
 
 Solution Plus convenable:
-=> cf script git-tfs-branch.sh
+=> cf script git-tfs-branch.sh ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
+sh ./git-tfs-branch.sh http://myTfsServer:8080/tfs/Repository $/MyProject/MyTFSBranch myBranch
+Note : Pour le nom "myBranch", éviter absolument les '.' et ' '
+ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/branche1
 
-TODO : fetch & commit d'une branche....
+Récupération des commits d’une branche:
+git tfs fetch -i branche1
+
+Commiter sur une branche TFS:
+git tfs rcheckin -i branche1
 
 Travailler avec les shelvesets
 ------------------------------
@@ -150,9 +157,10 @@ Avantages:
 - Cherry Picking
 - Meilleur Historique
 - Plus de mode connecté/déconnecté
+- Backport de commit entre branches plus facile
 
 Inconvénient:
-- Gestion des branches TFS un peu difficile
+- Creation des branches TFS un peu difficile
 - Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs. Non présent sur un serveur Git...)
 - (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
 
