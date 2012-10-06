@@ -29,7 +29,7 @@ git config --global core.autocrlf false
 3.Depuis GitExtension
 Au lancement de GitExtension, verifier que le checkup est bon!
 Ou configurer en conséquence...
-Menu "Settings"->"Settings..."->Onglet "Global Settings..."
+Menu "Settings"->"Settings..."->Onglet "Global Settings"
 Editor : notepad++ -multiInst -notabbar
 MergeTool : p4merge 
 MergeTool Path : C:/Program Files (x86)/p4merge/p4merge.exe
@@ -98,6 +98,18 @@ Pour commiter sur TFS:
 git config --global alias.tfscommit '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git tfs rcheckin ; git stash pop"'
 =>Utilisation: git tfscommit
 
+Scripts GitExtension:
+---------------------
+Il peut être pratique de créer dans GitExtension les scripts decrit ci-dessous ensuites disponibles par un clic droit dans le Browser de GitExtension.
+Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs séparées par le '/' :
+
+Tfs Fetch (Tronc)/git/tfs fetch
+Tfs commit (Tronc/rcheckin)/git/tfs rcheckin
+Rebase on Last Tfs/git/tfsrebase
+Tfs commit (Tronc) All/git/tfscommit
+Tfs commit (Tronc)/git/tfs ct
+
+Tfs Fetch (Branche)/bash/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
 
 Création d'une branche de TFS:
 ------------------------------
@@ -157,15 +169,15 @@ Retour d'expérience
 ===================
 Avantages:
 - Connaissance à tout instant de quelle version on utilise localement
-- Branches locales
+- Branches et cimmits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
 - Meilleur connaissance des modifications des autres utilisateurs (visualisation de l'historique + diffs)
 - BEAUCOUP plus grande souplesse de développement et commit
 - Remplacement du shelving par les branches ( et on peut faire plusieurs commits)
 - Commit de Revert
-- Bisect : trouver une régression facilement
-- Cherry Picking
+- Bisect : trouver une régression facilement en testant les commits successivement par dichotomie
+- Cherry Picking (prendre un commit intérressant d'une branche et l'appliquer sur la branche actuelle)
 - Meilleur Historique
-- Plus de mode connecté/déconnecté
+- Plus de mode connecté/déconnecté de TFS :D
 - Backport de commit entre branches plus facile
 
 Inconvénient:
