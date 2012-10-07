@@ -127,6 +127,10 @@ ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgitt
 Copie du script dans le répertoire binaires de Git, puis :
 git config --global alias.tfsbranch '!sh git-tfs-branch.sh'
 Utilisation:
+git tfsbranch $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTheBranch]
+ex:
+git tfsbranch $/valtechgittfs/branche1 branche1
+ou, si la commande précédente ne fonctionne pas :
 git tfsbranch $/valtechgittfs/branche1 branche1 16877
 
 
