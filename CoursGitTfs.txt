@@ -110,6 +110,7 @@ Tfs commit (Tronc) All/git/tfscommit
 Tfs commit (Tronc)/git/tfs ct
 
 Tfs Fetch (Branche)/bash/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
+TODO intégration 'tfsrebase' & 'tfscommit' dans GitExtension pour gérer les branches
 
 Création d'une branche de TFS:
 ------------------------------
@@ -121,7 +122,13 @@ Solution Plus convenable:
 => cf script git-tfs-branch.sh ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
 sh ./git-tfs-branch.sh http://myTfsServer:8080/tfs/Repository $/MyProject/MyTFSBranch myBranch
 Note : Pour le nom "myBranch", éviter absolument les '.' et ' '
-ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/branche1
+ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/branche1 branche1
+
+Copie du script dans le répertoire binaires de Git, puis :
+git config --global alias.tfsbranch '!sh git-tfs-branch.sh'
+Utilisation:
+git tfsbranch $/valtechgittfs/branche1 branche1 16877
+
 
 Récupération des commits d’une branche:
 git tfs fetch -i branche1
