@@ -103,42 +103,51 @@ Scripts GitExtension:
 Il peut être pratique de créer dans GitExtension les scripts decrit ci-dessous ensuites disponibles par un clic droit dans le Browser de GitExtension.
 Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs séparées par le '/' :
 
-Tfs Fetch (Tronc)/git/tfs fetch
-Tfs commit (Tronc/rcheckin)/git/tfs rcheckin
-Rebase on Last Tfs/git/tfsrebase
-Tfs commit (Tronc) All/git/tfscommit
-Tfs commit (Tronc)/git/tfs ct
+Tfs(Tronc)> Fetch/git/tfs fetch
+Tfs(Tronc)> Fetch and Rebase/git/tfsrebase
+Tfs(Tronc)> Commit/git/tfscommit
 
-Tfs Fetch (Branche)/bash/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
-TODO intégration 'tfsrebase' & 'tfscommit' dans GitExtension pour gérer les branches
+Pour info mais non utile:
+Tfs(Tronc)> Commit/git/tfs rcheckin
+Tfs(Tronc)> Commit Visuel/git/tfs ct
 
 Création d'une branche de TFS:
 ------------------------------
-Solution Facile :
+Solution Facile (qu'on ne fera pas!!):
 - Créer un nouveau dépot Git avec la seconde branche (cf clone vu précédement)
 - Inconvénients : on ne peut pas backporter des corrections
 
 Solution Plus convenable:
-=> cf script git-tfs-branch.sh ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
-sh ./git-tfs-branch.sh http://myTfsServer:8080/tfs/Repository $/MyProject/MyTFSBranch myBranch
-Note : Pour le nom "myBranch", éviter absolument les '.' et ' '
-ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/branche1 branche1
+Utiliser le script git-tfs-branch.sh depuis le répertoire git du projet ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
+sh ./git-tfs-branch.sh $/MyProject/MyTFSBranch myBranch [IdFirstCommitInTheBranch]
+Notes : - Pour le nom "myBranch", éviter absolument les '.' et ' ' et mettre les paramètres entre '"' si besoin.
+- Le 3ème paramètre, correspondant au 1er commit dans la branche, est facultatif et dans ce cas là le script essaye de le retrouver en utilisant la commande 'tf history $/MyProject/MyTFSBranch'.
+Cependant, cela ne marche pas tout le temps (par exemple pour les dépots Codeplex :( ). Il convient donc de le retrouver et de le passer au script.
+Pour cela, depuis l'explorateur de code source de TFS, faire "Afficher l'historique" sur la branche et prendre le n° de la serbière ligne.
+ex : sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1
+ou
+sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1 16877
 
+Encore mieux! :
 Copie du script dans le répertoire binaires de Git, puis :
 git config --global alias.tfsbranch '!sh git-tfs-branch.sh'
 Utilisation:
 git tfsbranch $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTheBranch]
-ex:
-git tfsbranch $/valtechgittfs/branche1 branche1
-ou, si la commande précédente ne fonctionne pas :
-git tfsbranch $/valtechgittfs/branche1 branche1 16877
-
+ex: git tfsbranch $/valtechgittfs/branche1 branche1 16877
 
 Récupération des commits d’une branche:
 git tfs fetch -i branche1
 
 Commiter sur une branche TFS:
 git tfs rcheckin -i branche1
+
+Scripts GitExtension (suite):
+-----------------------------
+Menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs séparées par le '/' :
+
+Tfs(Branche)> Fetch/sh/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
+Tfs(Branche)> Commit/sh/-c "git tfs rcheckin -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
+TODO intégration 'tfsbranchrebase' & 'tfsbranchcommit' dans GitExtension pour gérer les branches
 
 Travailler avec les shelvesets
 ------------------------------
@@ -161,28 +170,34 @@ Avantage de la branche Git sur le shelveset TFS :
 
 Utilisation de Git
 ==================
+- Règle de Base : Ne JAMAIS modifier des commits déjà partagés!!!!!!
+
 - Modification des commits existants (pour par ex. rajouter l'association de workitems!)
 git rebase -i HEAD~n (avec 'n' à remplacer par le nombre de commit qu'on veut réécrire)
-Note: Ne pas modifier des commits déjà partagés!!!!!!
+Attention : Ne pas enfreindre la règle précédente!!!
 
 - Historique des opérations (et réparation des erreurs!) : 
 git reflog => voire l'historique des modification
 git branch MaBranche d995afd => creation d'une branche sur un commit (en indiquant son sha1)
 
+- Astuce: Git ne fait qu'ajouter des commits et n'en détruie AUCUN! (sauf lors du passage du Garbage Collector tous les 30 jours pour effacer ceux non utilisés).
+ Donc avant de faire une opération dont vous n'avez pas l'habitude, vous avez juste à créer une branche là où vous êtes qui vous servira de sauvegarde!
+ Et à l'effacer quand vous avez réussi...
+
 Aperçu de Git-TF
 ================
 - C'est du Java
 - Attention à l'option --deep
-- Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser un GitExtension)
+- Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser depuis GitExtension)
  et même association de workitems pour TOUS les commits (si utilisation de l'option --deep)
 
 Retour d'expérience
 ===================
 Avantages:
 - Connaissance à tout instant de quelle version on utilise localement
-- Branches et cimmits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
+- Branches et commits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
 - Meilleur connaissance des modifications des autres utilisateurs (visualisation de l'historique + diffs)
-- BEAUCOUP plus grande souplesse de développement et commit
+- BEAUCOUP plus grande souplesse de développement et de commit
 - Remplacement du shelving par les branches ( et on peut faire plusieurs commits)
 - Commit de Revert
 - Bisect : trouver une régression facilement en testant les commits successivement par dichotomie
