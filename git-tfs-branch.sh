@@ -1,6 +1,6 @@
 #script to create a branch in git-tfs
 if [ $# -ne 2 ] && [ $# -ne 3 ] ; then
-  echo "parameters : $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTHeBranch]"
+  echo "parameters : $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTheBranch]"
   echo 'ex : "$/MyProject/MyTFSBranch" "myBranch" 345' 
   exit -1
 fi
@@ -27,10 +27,11 @@ git stash save
 myCommand="git log --pretty=format:%H --grep=';C$root_commit' > git_tfs_sha.txt"
 eval $myCommand
 sha1_root_commit=$(<git_tfs_sha.txt)
+rm git_tfs_sha.txt
+
 echo "Git root commit:$sha1_root_commit"
 if [ -z $sha1_root_commit ] ; then
   echo "Error during detecting commit root :("
-  rm git_tfs_sha.txt
   exit -1
 fi
 #create a local branch on this commit
@@ -42,7 +43,7 @@ echo "
 [tfs-remote \"$2\"]
 	url = $url_server
 	repository = $1
-	fetch = refs/remotes/default/$2" >> ./.git/config
+	fetch = refs/remotes/tfs/$2" >> ./.git/config
 
 #create the remote file to join the commit to the trunk
 echo $sha1_root_commit > ./.git/refs/remotes/tfs/$2
@@ -51,6 +52,5 @@ echo $sha1_root_commit > ./.git/refs/remotes/tfs/$2
 #fetch commits
 echo "Fetching tfs commits..."
 git tfs fetch -i $2
-#reset the local branch to the head of the 
-git reset --soft tfs/$2
-rm git_tfs_sha.txt
+#reset the local branch to the head of the branch
+git reset --hard tfs/$2
