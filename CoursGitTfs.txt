@@ -45,7 +45,12 @@ Git est :
 - stocké sous la forme d'un graphe acyclique d'objets
 - accessible avec des références
 
-Toute manipulation de Git ne fait que manipuler ce graphe (Ne jamais l'oublier et essayer de visualiser cela!!)
+Toute manipulation de Git ne fait que manipuler ce graphe... (Ne jamais l'oublier et essayer de visualiser cela!!)
+...en ne faisant qu'ajouter des commits!
+
+Présentation de GitExtension
+============================
+...
 
 
 Utilisation de Git-TFS:
@@ -221,8 +226,8 @@ Avantages:
 - Backport de commit entre branches plus facile
 
 Inconvénient:
-- Creation des branches TFS un peu difficile
-- Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs. Non présent sur un serveur Git...)
+- Creation des branches TFS un peu folklorique ;)
+- Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs qui créé les commits sur TFS et les récupère. Non présent sur un serveur Git...)
 - (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
 
 Conclusion
