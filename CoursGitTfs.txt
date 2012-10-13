@@ -90,7 +90,7 @@ git tfs rcheckin => réapplication des commits sur TFS
 git stash pop => réapplication des modifications non commitées
 
 Ajout d'alias pour automatiser ce workflow:
-Pour synchroniser ses modifications avec la sernière version de TFS:
+Pour synchroniser ses modifications avec la dernière version de TFS:
 git config --global alias.tfsrebase '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git stash pop"'
 =>Utilisation: git tfsrebase
 
@@ -141,13 +141,27 @@ git tfs fetch -i branche1
 Commiter sur une branche TFS:
 git tfs rcheckin -i branche1
 
+Ajout d'alias pour automatiser le workflow précédent avec des branches:
+Pour synchroniser ses modifications avec la dernière version de la branche sur TFS:
+git config --global alias.tfsrebasebranch '!sh -c "git tfs fetch -i $1 ; git stash save ; git rebase tfs/$1 ; git stash pop"'
+=>Utilisation: git tfsrebasebranch branche1
+
+Pour commiter sur la brance sur TFS:
+git config --global alias.tfscommitbranch '!sh -c "git tfs fetch -i $1 ; git stash save ; git rebase tfs/$1 ; git tfs -i $1 rcheckin ; git stash pop"'
+=>Utilisation: git tfscommitbranch branche1
+
 Scripts GitExtension (suite):
 -----------------------------
 Menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs séparées par le '/' :
 
 Tfs(Branche)> Fetch/sh/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
+Tfs(Branche)> Fetch and rebase/sh/-c "git tfsrebasebranch $(echo {sRemoteBranch} | sed 's/tfs\///')"
+Tfs(Branche)> Commit/sh/-c "git tfscommitbranch $(echo {sRemoteBranch} | sed 's/tfs\///')"
+
+Note: Pour les utiliser, bien faire attention à cliquer sur la ligne du commit où se trouve la branche distante 'tfs/maBranche' (en vert, dans GitExtension)
+
+Pour info mais non utile:
 Tfs(Branche)> Commit/sh/-c "git tfs rcheckin -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
-TODO intégration 'tfsbranchrebase' & 'tfsbranchcommit' dans GitExtension pour gérer les branches
 
 Travailler avec les shelvesets
 ------------------------------
