@@ -1,8 +1,13 @@
 #script to create a branch in git-tfs
 if [ $# -ne 2 ] && [ $# -ne 3 ] ; then
-  echo "parameters : $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTheBranch]"
+  echo "parameters : $/ProjectRepository/BranchDirectory localBranchName [IdParentCommitBeforeBranching]"
   echo 'ex : "$/MyProject/MyTFSBranch" "myBranch" 345' 
   exit -1
+fi
+
+if [ ! -z "$(echo $2 | sed -n 's/\([.\/]\)/\1/p')" ]; then
+	echo 'The local branch name contains forbiden characters : . / \ '
+	exit -1
 fi
 
 url_server=`git config --local --get tfs-remote.default.url`
@@ -12,16 +17,15 @@ if [ -z $url_server ] ; then
 fi
 #find TFS first commit of the branch
 if [ $# -ne 2 ] ; then
-	let first_commit=$3
+	let root_commit=$3
 else
 	let first_commit=`tf history $1 | grep "^[0-9]" | awk '{print $1}'`
+	#Take the parent to have the root commit
+	let root_commit=$((first_commit-1))
+	echo 'Warning!!! : In some rare case the previous commit is not the parent!! Try passing the good tfs commit id in parameters!!'
 fi
 
-#Take the parent to have the root commit
-let root_commit=$((first_commit-1))
 echo "TFS root commit:$root_commit"
-
-git stash save
 
 #find the sha of the root parent in git log
 myCommand="git log --pretty=format:%H --grep=';C$root_commit' > git_tfs_sha.txt"
@@ -34,6 +38,9 @@ if [ -z $sha1_root_commit ] ; then
   echo "Error during detecting commit root :("
   exit -1
 fi
+
+git stash save
+
 #create a local branch on this commit
 git checkout -b $2 $sha1_root_commit
 
