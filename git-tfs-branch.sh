@@ -1,5 +1,7 @@
 #script to create a branch in git-tfs
-if [ $# -ne 2 ] && [ $# -ne 3 ] ; then
+if [ $# -ne 3 ] ; then
+  echo "parameters : $/ProjectRepository/BranchDirectory localBranchName $/ProjectRepository/SourceBranchDirectory"
+  echo 'ex : "$/MyProject/MyTFSBranch" "myBranch" "$/MyProject/MyTFSTrunk"' 
   echo "parameters : $/ProjectRepository/BranchDirectory localBranchName [IdParentCommitBeforeBranching]"
   echo 'ex : "$/MyProject/MyTFSBranch" "myBranch" 345' 
   exit -1
@@ -12,20 +14,25 @@ fi
 
 url_server=`git config --local --get tfs-remote.default.url`
 if [ -z $url_server ] ; then
-  echo "Error : No tfs/default detected"
+  echo "Error : No tfs/default detected. This repository is not in the good state!"
   exit -1
 fi
+
 #find TFS first commit of the branch
-if [ $# -ne 2 ] ; then
+if [[ $3 != *[!0-9]* ]]; then
 	let root_commit=$3
-else
+	echo "TFS root commit:$root_commit"
+  else
 	let first_commit=`tf history $1 | grep "^[0-9]" | awk '{print $1}'`
 	#Take the parent to have the root commit
 	let root_commit=$((first_commit-1))
-	echo 'Warning!!! : In some rare case the previous commit is not the parent!! Try passing the good tfs commit id in parameters!!'
+	echo "The root changset founded id is $root_commit !"
+	echo "Please verify that it's the good changset beafore calling the script with the parameters:"
+	echo "$1 $2 $root_commit"
+	exit 0
 fi
 
-echo "TFS root commit:$root_commit"
+exit -1
 
 #find the sha of the root parent in git log
 myCommand="git log --pretty=format:%H --grep=';C$root_commit' > git_tfs_sha.txt"
@@ -61,3 +68,4 @@ echo "Fetching tfs commits..."
 git tfs fetch -i $2
 #reset the local branch to the head of the branch
 git reset --hard tfs/$2
+
