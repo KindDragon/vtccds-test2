@@ -1,4 +1,5 @@
 Cours du soir Git-TFS:
+user codeplex : vtccds/vtccds
 
 Installation des outils nécessaires
 ===================================
@@ -125,13 +126,14 @@ Solution Facile (qu'on ne fera pas!!):
 Solution Plus convenable:
 Utiliser le script git-tfs-branch.sh depuis le répertoire git du projet ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
 sh ./git-tfs-branch.sh $/MyProject/MyTFSBranch myBranch [IdFirstCommitInTheBranch]
-Notes : - Pour le nom "myBranch", éviter absolument les '.' et ' ' et mettre les paramètres entre '"' si besoin.
-- Le 3ème paramètre, correspondant au 1er commit dans la branche, est facultatif et dans ce cas là le script essaye de le retrouver en utilisant la commande 'tf history $/MyProject/MyTFSBranch'.
-Cependant, cela ne marche pas tout le temps (par exemple pour les dépots Codeplex :( ). Il convient donc de le retrouver et de le passer au script.
-Pour cela, depuis l'explorateur de code source de TFS, faire "Afficher l'historique" sur la branche et prendre le n° de la serbière ligne.
+Notes : 
+- Pour le nom "myBranch", éviter absolument les '.' et ' ' et mettre les paramètres entre '"' si besoin.
+- Le 3ème paramètre, correspondant à l'identifiant TFS du dernier commit commun entre le tronc et la branche. TFS n'est pas très utile pour le trouver :(
+Pour cela, depuis l'explorateur de code source de TFS, faire "Afficher l'historique" sur la branche, le n° de la dernière ligne étant le n° du 1er commit dans la branche.
+Il faut trouver le commit parent. A vous de jouer :( Bien souvent, il suffit de prendre le commit précédent (donc soustraire 1) mais c'est à vérifier absolument!!
 ex : sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1
 ou
-sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1 16877
+sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1 16876
 
 Encore mieux! :
 Copie du script dans le répertoire binaires de Git, puis :
@@ -216,7 +218,7 @@ Avantages:
 - Connaissance à tout instant de quelle version on utilise localement
 - Branches et commits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
 - Meilleur connaissance des modifications des autres utilisateurs (visualisation de l'historique + diffs)
-- BEAUCOUP plus grande souplesse de développement et de commit
+- BEAUCOUP plus grande souplesse de développement et de commit (commit de parties de fichiers!)
 - Remplacement du shelving par les branches ( et on peut faire plusieurs commits)
 - Commit de Revert
 - Bisect : trouver une régression facilement en testant les commits successivement par dichotomie
