@@ -128,7 +128,7 @@ Utiliser le script git-tfs-branch.sh depuis le répertoire git du projet ( ou ht
 sh ./git-tfs-branch.sh $/MyProject/MyTFSBranch myBranch [IdFirstCommitInTheBranch]
 Notes : 
 - Pour le nom "myBranch", éviter absolument les '.' et ' ' et mettre les paramètres entre '"' si besoin.
-- Le 3ème paramètre, correspondant à l'identifiant TFS du dernier commit commun entre le tronc et la branche. TFS n'est pas très utile pour le trouver :(
+- Le 3ème paramètre, correspondant à l'identifiant TFS du dernier changeset commun entre le tronc et la branche. TFS n'est pas très utile pour le trouver :(
 Pour cela, depuis l'explorateur de code source de TFS, faire "Afficher l'historique" sur la branche, le n° de la dernière ligne étant le n° du 1er commit dans la branche.
 Il faut trouver le commit parent. A vous de jouer :( Bien souvent, il suffit de prendre le commit précédent (donc soustraire 1) mais c'est à vérifier absolument!!
 ex : sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1
