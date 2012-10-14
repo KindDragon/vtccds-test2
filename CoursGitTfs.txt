@@ -97,11 +97,11 @@ git stash pop => réapplication des modifications non commitées
 
 Ajout d'alias pour automatiser ce workflow:
 Pour synchroniser ses modifications avec la dernière version de TFS:
-git config --global alias.tfsrebase '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git stash pop"'
+git config --global alias.tfsrebase '!sh -c "git tfs fetch && git stash save && git rebase tfs/default && git stash pop"'
 =>Utilisation: git tfsrebase
 
 Pour commiter sur TFS:
-git config --global alias.tfscommit '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git tfs rcheckin ; git stash pop"'
+git config --global alias.tfscommit '!sh -c "git tfs fetch && git stash save && git rebase tfs/default && git tfs rcheckin && git stash pop"'
 =>Utilisation: git tfscommit
 
 Scripts GitExtension:
@@ -124,23 +124,13 @@ Solution Facile (qu'on ne fera pas!!):
 - Inconvénients : on ne peut pas backporter des corrections
 
 Solution Plus convenable:
-Utiliser le script git-tfs-branch.sh depuis le répertoire git du projet ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
-sh ./git-tfs-branch.sh $/MyProject/MyTFSBranch myBranch [IdFirstCommitInTheBranch]
-Notes : 
-- Pour le nom "myBranch", éviter absolument les '.' et ' ' et mettre les paramètres entre '"' si besoin.
-- Le 3ème paramètre, correspondant à l'identifiant TFS du dernier changeset commun entre le tronc et la branche. TFS n'est pas très utile pour le trouver :(
-Pour cela, depuis l'explorateur de code source de TFS, faire "Afficher l'historique" sur la branche, le n° de la dernière ligne étant le n° du 1er commit dans la branche.
-Il faut trouver le commit parent. A vous de jouer :( Bien souvent, il suffit de prendre le commit précédent (donc soustraire 1) mais c'est à vérifier absolument!!
-ex : sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1
-ou
-sh ./git-tfs-branch.sh $/valtechgittfs/branche1 branche1 16876
+Utiliser la "version perso de git-tfs" (http://github.com/git-tfs/git-tfs/pull/232) contenant la commande "init-branch" :
 
-Encore mieux! :
-Copie du script dans le répertoire binaires de Git, puis :
-git config --global alias.tfsbranch '!sh git-tfs-branch.sh'
-Utilisation:
-git tfsbranch $/ProjectRepository/BranchDirectory localBranchName [IdFirstCommitInTheBranch]
-ex: git tfsbranch $/valtechgittfs/branche1 branche1 16877
+git tfs init-branch $/MyProject/MyTFSBranch //Pour une branche spécifique
+git tfs init-branch all //Pour toutes les branches
+
+ex :
+git tfs init-branch $/valtechgittfs/branche1
 
 Récupération des commits d’une branche:
 git tfs fetch -i branche1
@@ -150,11 +140,11 @@ git tfs rcheckin -i branche1
 
 Ajout d'alias pour automatiser le workflow précédent avec des branches:
 Pour synchroniser ses modifications avec la dernière version de la branche sur TFS:
-git config --global alias.tfsrebasebranch '!sh -c "git tfs fetch -i $1 ; git stash save ; git rebase tfs/$1 ; git stash pop"'
+git config --global alias.tfsrebasebranch '!sh -c "git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git stash pop"'
 =>Utilisation: git tfsrebasebranch branche1
 
 Pour commiter sur la brance sur TFS:
-git config --global alias.tfscommitbranch '!sh -c "git tfs fetch -i $1 ; git stash save ; git rebase tfs/$1 ; git tfs -i $1 rcheckin ; git stash pop"'
+git config --global alias.tfscommitbranch '!sh -c "git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git tfs -i $1 rcheckin && git stash pop"'
 =>Utilisation: git tfscommitbranch branche1
 
 Scripts GitExtension (suite):
@@ -228,7 +218,6 @@ Avantages:
 - Backport de commit entre branches plus facile
 
 Inconvénient:
-- Creation des branches TFS un peu folklorique ;)
 - Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs qui créé les commits sur TFS et les récupère. Non présent sur un serveur Git...)
 - (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
 
