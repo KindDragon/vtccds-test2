@@ -1,5 +1,4 @@
 Cours du soir Git-TFS:
-user codeplex : vtccds/vtccds
 
 Installation des outils nécessaires
 ===================================
@@ -64,6 +63,8 @@ ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
 Commande de clone du dépot TFS sans historique:
 git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
 ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
+
+user codeplex : vtccds/vtccds
 
 Utilisation du login/mdp
 login:snd\[LoginCodePlex]_cp
