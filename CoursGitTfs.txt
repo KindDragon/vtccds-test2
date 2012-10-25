@@ -8,13 +8,27 @@ tags:
 - TFS
 published: true
 ---
+Hello Alexis
 
+
+
+
+Hello longchrea :D @@
 _(ou comment utiliser Git en environnement hostile!)_
 
 Parmis les contrôleur de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
 Nous allons essayer de contourner les problèmes du 1er grâce au 2ond...
 
-h2. 1.Installation des outils nécessaires
+h2. 1.Installation des outils nécessaire
+nvklqsdjflqdsjflkqdfjlsdfq
+*
+
+vjsocvjlkqsvdlkcxv
+
+
+lkwxcvkl<csjlvx<sc
+
+ksdfjskdfs
 
 * Installation de "GitExtension":http://code.google.com/p/gitextensions/ (et Git)
 	-> Utilisation d'OpenSsh (facultatif)
