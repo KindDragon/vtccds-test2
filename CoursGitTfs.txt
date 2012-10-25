@@ -1,4 +1,4 @@
----
+﻿---
 layout: post
 title: "Git-tfs : Utilisation de Git avec un serveur TFS"
 description: " Git-Tfs, GitExtension et la gestion des branches (Utilisé pour un Cours du soir Valtech)"
@@ -11,18 +11,24 @@ published: true
 
 _(ou comment utiliser Git en environnement hostile!)_
 
+Parmis les contrôleur de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
+Nous allons essayer de contourner les problèmes du 1er grâce au 2ond...
+
 h2. 1.Installation des outils nécessaires
 
 * Installation de "GitExtension":http://code.google.com/p/gitextensions/ (et Git)
-	->Options par defaut de Git sauf : "Checkout as-is, commit as-is"
+	-> Utilisation d'OpenSsh (facultatif)
+	-> Décocher l'option GitGUI (facultatif)
+	-> Options par defaut de Git sauf : "Checkout as-is, commit as-is"
 
 * Installation de "p4merge":http://www.perforce.com/product/components/perforce_visual_merge_and_diff_tools , "Telechargement":http://www.perforce.com/downloads/complete_list (besoin d'un outil de 3way-merge!)
+	-> Lors de la sélection des composants à installer, TOUT décocher sauf "Visual Merge Tool (P4Merge)".
 
 * Installation de "notepad++":http://download.tuxfamily.org/notepadplus/6.2/npp.6.2.Installer.exe (besoin d'un éditeur de texte multi-instances!!)
 
 * Copie des fichiers de "Git-tfs":http://github.com/git-tfs/git-tfs/downloads dans le répertoire de Git. Pour l'instant, on utilisera plutôt une "version customisée de git-tfs":https://github.com/downloads/pmiossec/git-tfs/git-tfs-with-branches.zip 
 
-* Verifier que le répertoire 'bin' de Git est dans le path
+* Verifier que le répertoire 'bin' de Git est dans le path ainsi que les outils p4merge et notepad++.
 
 _Avant-propos : Pour consulter l'aide d'une commande :_
 
@@ -35,8 +41,9 @@ h2. 2.Configuration de Git & GitExtension
 3 moyens...
 
 * Edition directement du fichier .gitconfig (situé dans le répertoire utilisateur)
-Utilisation d'un .gitignore global (si vous ne voulez pas archiver le fichier .gitignore dans TFS) => Copie du .gitignore_global ( ou celui de "GitHub":https://github.com/github/gitignore )
-Copie dans votre répertoire utilisateur et Edition du .gitconfig (mettre vos informations personnelles!)
+_Bootstrap_ : Télécharger "l'archive":../../../../../files/article_git/git_config.zip et copiez le contenu dans votre répertoire utilisateur puis...
+-> Edition du fichier .gitconfig (mettre vos informations personnelles!)
+-> Utilisation d'un .gitignore global (si vous ne voulez pas archiver un fichier .gitignore dans TFS) => Copie du .gitignore_global( ou celui de "GitHub":https://github.com/github/gitignore )
 
 * Par ligne de commande
 Les configuration necessaires pour faire fonctionner Git: 
@@ -80,17 +87,21 @@ h2. 3.Rappels sur Git!
 
 Git est :
 * un gestionnaire de contenu (et non de différence!)
-* stocké sous la forme d'un graphe acyclique d'objets
+* stocké sous la forme d'un graphe acyclique d'objets ou DAG(Directed Acyclic Graph)
 * accessible avec des références
 
-!=http://git-scm.com/figures/18333fig0315-tn.png(Exemple de graphe acyclique --hitorique du dépot--)!
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0315-tn.png(Exemple de graphe acyclique --historique du dépot--)! |
+|=. _Exemple de graphe acyclique représentant l'historique du dépot_ |
 
 Toute manipulation de Git ne fait que manipuler ce graphe... (Ne jamais l'oublier et essayer de visualiser cela!!)
 ...en ne faisant qu'ajouter des commits!
 
 h2. 4.Présentation de GitExtension
 
-!={width: 509px; height: 334px;}http://gitextensions.googlecode.com/files/commitlog205.png!
+table{width:100%}.
+|=. !{width: 509px; height: 334px;}http://gitextensions.googlecode.com/files/commitlog205.png! |
+|=. _Interface de GitExtension montrant le DAG d'historique du dépot_ |
 
 Démo...
 
@@ -108,12 +119,12 @@ Utilisation des logins codeplex pour le cours du soir : vtccds/vtccds
 
 h3. 5.1. Clonage du dépôt TFS
 
-Commande de clone du dépot TFS avec historique (conseillé!):
+Commande de clone (dans le répertoire courant) du dépot TFS avec historique (conseillé!):
 
 bc. git tfs clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
 ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
 
-Commande de clone du dépot TFS sans historique:
+Commande de clone (dans le répertoire courant) du dépot TFS sans historique (dernier changeset):
 
 bc. git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
 ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
@@ -178,6 +189,7 @@ h3. 5.5.Scripts GitExtension:
 Il peut être pratique de créer dans GitExtension les scripts décrit ci-dessous; ensuite disponibles par un clic droit dans le Browser de GitExtension.
 Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs de chaque ligne :
 
+table{width:100%}.
 |_. Name|_. Cmd.|_. Arguments|
 |Tfs(Tronc)> Fetch|git|tfs fetch|
 |Tfs(Tronc)> Fetch and Rebase|git|tfsrebase|
@@ -185,6 +197,7 @@ Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajo
 
 Pour info mais non utile:
 
+table{width:100%}.
 |_. Name|_. Cmd.|_. Arguments|
 |Tfs(Tronc)> Commit|git|tfs rcheckin|
 |Tfs(Tronc)> Commit Visuel|git|tfs ct|
@@ -281,15 +294,24 @@ git stash pop //pour récupérer le dernier stash mis de côté
 
 * Merge / Rebase
 
-Le merge :
+*Le merge :*
 # crée un commit supplémentaire pour réunir les 2 branches.
 # Il permet de matérialiser l'introduction d'une fonctionnalité dans une branche.
-# Il permet le travail avec des fichiers modifiés dans l'espace de travail.
+# Cette opération peut être réalisée avec des fichiers modifiés dans l'espace de travail.
 
-Le rebase :
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0317-tn.png! |
+|=. _le DAG après un merge : le commit C6 est un commit de merge_ |
+
+
+*Le rebase :*
 # réapplique les commit d'une branche sur un commit.
 # Il permet d'avoir un historique linéaire.
-# Il ne permet pas de travailler avec des fichiers modifiées dans l'espace de travail (stash).
+# Cette opération ne peut être réalisée avec des fichiers modifiés dans l'espace de travail (nécessité de faire un stash auparavant).
+
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0329-tn.png! |
+|=. _le DAG après un rebase : le commit C3 est réappliqué sur la branche master..._ |
 
 * J'ai commité dans le tronc alors que je voulais faire une branche
 
@@ -315,6 +337,7 @@ h2. 7. Aperçu de Git-TF
 * Par défaut, création d'un seul commit de merge (utiliser l'option &ndash;&ndash;deep pour réappliquer les commits locaux sur le serveur TFS)
 * Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser depuis une GUI :( )
  et même association de workitems pour TOUS les commits (si utilisation de l'option &ndash;&ndash;deep. Et apparement il y aurait un bug :( )
+* Pas de gestion des branches (un clone, donc un dépot par branche)
 * C'est du Java
 
 h2. 8. Retour d'expérience
@@ -333,7 +356,8 @@ h3. Avantages:
 * Backport de commit entre branches plus facile
 
 h3. Inconvénient:
-* Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs qui créé les commits sur TFS et les récupère. Non présent sur un serveur Git...)
+* Ticket d'entrée légèrement plus important (il faut comprendre/visualiser les manipulations du DAG)
+* Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs qui créé les commits sur TFS, les récupère et fait un rebase dessus. Non présent sur un dépot distant Git qui ne fait qu'envoyer les commits sur le dépot distant...)
 * (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
 
 h2. 9. Conclusion
