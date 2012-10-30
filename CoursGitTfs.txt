@@ -8,6 +8,7 @@ tags:
 - TFS
 published: true
 ---
+
 _(ou comment utiliser Git en environnement hostile!)_
 
 Parmis les contrôleurs de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
