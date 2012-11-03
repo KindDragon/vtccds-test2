@@ -350,7 +350,7 @@ git branch MaBranche d995afd => creation d'une branche sur un commit (en indiqua
  
 * Trouver un commit fautif : Bisect !
 
-h2. 7. Aperçu de Git-TF
+h2. 7. Aperçu de "Git-TF":http://gittf.codeplex.com/
 
 * Par défaut, création d'un seul commit de merge (utiliser l'option &ndash;&ndash;deep pour réappliquer les commits locaux sur le serveur TFS) et perte des messages de commit (sauf le dernier)
 * Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser depuis une GUI :( )
