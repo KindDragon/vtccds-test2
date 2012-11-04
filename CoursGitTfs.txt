@@ -52,12 +52,12 @@ _Bootstrap_ : Télécharger "l'archive":../../../../../files/article_git/git_con
 -> Utilisation d'un .gitignore global (si vous ne voulez pas archiver un fichier .gitignore dans TFS) => Copie du .gitignore_global( ou celui de "GitHub":https://github.com/github/gitignore )
 
 * Par ligne de commande
-Les configuration necessaires pour faire fonctionner Git: 
+Les configurations necessaires pour faire fonctionner Git: 
 
 bc. git config --global user.name "Ton Nom"
 git config --global user.email ton_mail@valtech.fr
 
-Les configuration nécessaires pour faire fonctionner Git sous Windows!: 
+Les configurations nécessaires pour faire fonctionner Git sous Windows!: 
 
 bc. git config --global core.ignorecase true
 git config --global core.autocrlf false
