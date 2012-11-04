@@ -20,19 +20,11 @@ if [ ! -z "$(git status --porcelain)" ]; then
     exit 1;
 fi;
  
-echo "$(date) Pulling from central repo first to avoid redundant round-trips to TFS..."
-git pull origin master:master > '~temp.log'
-check_err $? "Pulling from central repo failed"
+echo "$(date) checkout master branch"
+git checkout master
  
 echo "$(date) Pulling from TFS..."
 git tfs pull -d > '~temp.log'
 check_err $? "Pulling from TFS resulted in error";
  
-local_commits_to_push="$(git rev-list master ^origin/master)"
-if [ -z "$local_commits_to_push" ]; then
-    echo "$(date) Central repo is up-to-date, nothing to push"
-else
-    echo "$(date) Pushing updates to central repo"
-    git push origin master > '~temp.log'
-    check_err $? "Push to central resulted in error";
-fi;
+git checkout git_tfs_foo
