@@ -27,4 +27,6 @@ echo "$(date) Pulling from TFS..."
 git tfs pull -d > '~temp.log'
 check_err $? "Pulling from TFS resulted in error";
  
+echo "$(date) Checkout staging 'git_tfs_foo' branch..."
 git checkout git_tfs_foo
+echo "$(date) End Process!"
