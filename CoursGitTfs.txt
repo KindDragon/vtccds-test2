@@ -11,8 +11,13 @@ published: true
 
 _(ou comment utiliser Git en environnement hostile!)_
 
-Parmis les contrôleurs de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
-Nous allons essayer de contourner les problèmes du 1er grâce au 2ond...
+Le controleur de code source TFS(Team Foundation Server) est bien souvent utilisé en entreprise.
+
+Cependant, parmis les contrôleurs de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
+
+Le contrôleur de code source Git apporte pourtant une plus grande souplesse d'utilisation et de nombreux avantages par rapport à le gestion de code source de TFS.
+
+Nous allons donc voir comment nous pouvons utiliser Git en local tout en utilisant TFS côté serveur et ainsi en tirer de nombreux avantages.
 
 h2. 1.Installation des outils nécessaires
 
@@ -26,11 +31,12 @@ h2. 1.Installation des outils nécessaires
 
 * Installation de "notepad++":http://download.tuxfamily.org/notepadplus/6.2/npp.6.2.Installer.exe (besoin d'un éditeur de texte multi-instances!!)
 
-* Copie des fichiers de "Git-tfs":http://github.com/git-tfs/git-tfs/downloads dans le répertoire de Git. Pour l'instant, on utilisera plutôt une "version customisée de git-tfs":https://github.com/downloads/pmiossec/git-tfs/git-tfs-with-branches.zip 
+* Copie des fichiers de "Git-tfs":http://github.com/git-tfs/git-tfs/downloads dans le répertoire de Git.
+Pour le moment, la gestion des branches par git-tfs que j'ai développée n'étant pas encore dans la version officielle 0.15 de git-tfs (pull request en attente de validation sur GitHub), on utilisera plutôt une "version personnelle de git-tfs":https://github.com/downloads/pmiossec/git-tfs/git-tfs-with-branches.zip 
 
 * Verifier que le répertoire 'bin' de Git est dans le path ainsi que celui des outils p4merge et notepad++.
 
-_Avant-propos : Pour consulter l'aide d'une commande :_
+_Avant-propos : Pour consulter l'aide d'une commande git :_
 
 bc. git commit -h //aide de la ligne de commande
 git help commit //aide html complete de la commande (page man)
@@ -121,7 +127,12 @@ Démo...
 
 h2. 5.Utilisation de Git-TFS:
 
-Utilisation des logins codeplex pour le cours du soir : vtccds/vtccds
+_Note :
+* On pourra tester toutes les commandes git-tfs indiquées en utilisant le projet "valtechgittfs" disponible sur "Codeplex":http://valtechgittfs.codeplex.com/
+Pour cela, on pourra utiliser le compte utilisateur 'vtccds' (mot de passe:vtccds)_
+* Attention : Lors de l'intéraction avec le serveur TFS de Codeplex, le login à fournir est de la forme (sans les crochets!): [LoginCodePlex]_cp@snd 
+Le mot de passe reste celui du compte Codeplex.
+
 ==<!--Destruction comptes : https://www.codeplex.com/site/contact  vtcgitcds/cdsgitvtc & vtc_cds/vtc_cds -->==
 
 
@@ -130,22 +141,27 @@ h3. 5.1. Clonage du dépôt TFS
 Commande de clone (dans le répertoire courant) du dépot TFS avec historique (conseillé! mais long...):
 
 bc. git tfs clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
+
+exemple:
+
+bc. git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
+
+_Note : Attention à ne cloner que le répertoire correspondant à la branche principale du projet (le tronc) et non pas tout le dépot entier!_
 
 Commande de clone (dans le répertoire courant) du dépot TFS sans historique (dernier changeset):
 
 bc. git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
 
-Convient pour un besoin ponctuel ou qu'on n'a pas besoin de l'historique...
+exemple:
 
-Utilisation du login/mdp
-login:snd\[LoginCodePlex]_cp
-mdp:celui du compte codeplex
+bc. git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
 
-Note :
+Convient pour un développement ponctuel ou lorsqu'on n'a pas besoin de l'historique...
+
+
+_Note :_
 * le clone ne doit pas être fait dans un répertoire mappé avec TFS (workspace).
-* on peut refiler le dépot cloné par copie (ou par clonage git!) à quelqu'un
+* on peut partager le dépot cloné juste par copie (ou par clonage git!) à un autre développeur.
 
 h3. 5.2. Récupération des commits de TFS (sans merge ni rebase dans branche master)
 
@@ -219,16 +235,20 @@ table{width:100%}.
 
 h3. 5.6.Gestion d'une branche de TFS:
 
-Création d'une branche TFS...
-Solution Facile (qu'on ne fera pas!!):
+Notes préalable : 
+* La création d'une branche doit toujours être effectuée avec TFS. Dès sa création, on peut ensuite la récupérer avec git-tfs et travailler avec.
+* Rien n'empêche le développeur de créer des branches locales avec Git mais si une branche doit être partagée par tous les développeurs, alors la branche doit être créé préalablement sur TFS.
+
+Récupération d'une branche TFS...
+Solution déconseillée :
 * Créer un nouveau dépot Git avec la seconde branche (cf clone vu précédement)
-* Inconvénients : on ne peut pas backporter des corrections
+* Inconvénients : on ne peut pas backporter des corrections et voir les différences entre les branches!
 
 Solution Plus convenable:
 Utiliser la customisée de git-tfs contenant la commande "init-branch" :
 
-bc. git tfs init-branch $/MyProject/MyTFSBranch //Pour une branche spécifique
-git tfs init-branch all //Pour toutes les branches
+bc. git tfs init-branch $/MyProject/MyTFSBranch //Pour récupérer une branche spécifique
+git tfs init-branch --all //Pour récupérer toutes les branches existantes
 
 bc. ex :
 git tfs init-branch $/valtechgittfs/branche1
@@ -350,7 +370,7 @@ git branch MaBranche d995afd => creation d'une branche sur un commit (en indiqua
  
 * Trouver un commit fautif : Bisect !
 
-h2. 7. Aperçu de "Git-TF":http://gittf.codeplex.com/
+h2. 7. Aperçu de Git-TF
 
 * Par défaut, création d'un seul commit de merge (utiliser l'option &ndash;&ndash;deep pour réappliquer les commits locaux sur le serveur TFS) et perte des messages de commit (sauf le dernier)
 * Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser depuis une GUI :( )
