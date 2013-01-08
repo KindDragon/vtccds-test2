@@ -1,8 +1,8 @@
-﻿---
+---
 layout: post
 title: "Git-tfs : Utilisation de Git avec un serveur TFS"
 description: " Git-Tfs, GitExtension et la gestion des branches (Utilisé pour un Cours du soir Valtech)"
-categories: .Net
+categories: .Net,test de merge
 tags:
 - Git
 - TFS
