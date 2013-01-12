@@ -434,3 +434,4 @@ test fetch workitems...
 Local date is [2013-01-12 19:25:16.029] 
 Local date is [2013-01-13 00:05:13.652] 
 Local date is [2013-01-13 00:14:48.486] 
+Local date is [2013-01-13 00:36:57.614] 
