@@ -28,4 +28,5 @@
 	tfscommit = "!sh -c \"git tfs fetch && git stash save && git rebase tfs/default && git tfs rcheckin && git stash pop\""
 	tfsrebasebranch = "!sh -c \"git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git stash pop\""
 	tfscommitbranch = "!sh -c \"git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git tfs -i $1 rcheckin && git stash pop\""
+	ri = rebase -i
 
