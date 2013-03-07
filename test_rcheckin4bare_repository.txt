@@ -5,3 +5,4 @@ test!"bare"
 "bare" 
 autre commit!!!
 "bare" 
+"bare" 
