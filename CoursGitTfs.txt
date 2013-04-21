@@ -1,200 +1,452 @@
+---
+layout: post
+title: "Git-tfs : Utilisation de Git avec un serveur TFS"
+description: " Git-Tfs, GitExtension et la gestion des branches (Utilisé pour un Cours du soir Valtech)"
+categories: .Net,test de merge
+tags:
+- Git
+- TFS
+published: true
+---
 c'est juste pour tester la branche2!!!!!
 Cours du soir Git-TFS:
 
-Installation des outils nécessaires
-===================================
-Installation de GitExtension (et Git) => https://code.google.com/p/gitextensions/
-	->Options par defaut de Git sauf : "Checkout as-is, commit as-is"
-Installation de p4merge (si besoin : on doit avoir un outil de 3way-merge) => http://www.perforce.com/product/components/perforce_visual_merge_and_diff_tools
-Installation de notepad++ (si besoin) => Note: il faut avoir un éditeur de texte multiinstance!! (notepad++ -multiInst -notabbar)
-Copie des fichiers de Git-tfs dans le répertoire de Git => https://github.com/git-tfs/git-tfs/downloads
-Verifier que le répertoire 'bin' de Git est dans le path
+_(ou comment utiliser Git en environnement hostile!)_
 
-Configuration de Git & GitExtension
-===================================
-Trois moyens...
+Le controleur de code source TFS(Team Foundation Server) est bien souvent utilisé en entreprise.
 
-1.Edition directement du fichier .gitconfig (situé dans le répertoire utilisateur)
-Utilisation d'un .gitignore global (si vous ne voulez pas archiver le fichier .gitignore dans TFS) => Copie du .gitignore_global ( ou celui sur https://github.com/github/gitignore )
-Copie dans votre répertoire utilisateur et Edition du .gitconfig (mettre vos informations personnelles!)
+Cependant, parmis les contrôleurs de code source, "TFS est celui le plus détesté par les développeurs :( et Git celui le plus apprécié":http://www.infoq.com/news/2010/03/Review-Version-Control-Systems .
 
-2.Par ligne de commande
-Les configuration necessaires pour faire fonctionner Git: 
-git config --global user.name "Ton Nom"
+Le contrôleur de code source Git apporte pourtant une plus grande souplesse d'utilisation et de nombreux avantages par rapport à le gestion de code source de TFS.
+
+Nous allons donc voir comment nous pouvons utiliser Git en local tout en utilisant TFS côté serveur et ainsi en tirer de nombreux avantages.
+
+h2. 1.Installation des outils nécessaires
+
+* Installation de "GitExtension":http://code.google.com/p/gitextensions/ (et Git)
+	-> Utilisation d'OpenSsh (facultatif)
+	-> Décocher l'option GitGUI (facultatif)
+	-> Options par defaut de Git sauf : "Checkout as-is, commit as-is"
+
+* Installation de "p4merge":http://www.perforce.com/product/components/perforce_visual_merge_and_diff_tools , "Telechargement":http://www.perforce.com/downloads/complete_list (besoin d'un outil de 3way-merge!)
+	-> Lors de la sélection des composants à installer, TOUT décocher sauf "Visual Merge Tool (P4Merge)".
+
+* Installation de "notepad++":http://download.tuxfamily.org/notepadplus/6.2/npp.6.2.Installer.exe (besoin d'un éditeur de texte multi-instances!!)
+
+* Copie des fichiers de "Git-tfs":http://github.com/git-tfs/git-tfs/downloads dans le répertoire de Git.
+Pour le moment, la gestion des branches par git-tfs que j'ai développée n'étant pas encore dans la version officielle 0.15 de git-tfs (pull request en attente de validation sur GitHub), on utilisera plutôt une "version personnelle de git-tfs":https://github.com/downloads/pmiossec/git-tfs/git-tfs-with-branches.zip 
+
+* Verifier que le répertoire 'bin' de Git est dans le path ainsi que celui des outils p4merge et notepad++.
+
+_Avant-propos : Pour consulter l'aide d'une commande git :_
+
+bc. git commit -h //aide de la ligne de commande
+git help commit //aide html complete de la commande (page man)
+
+
+h2. 2.Configuration de Git & GitExtension
+
+3 moyens...
+
+* Edition directement du fichier .gitconfig (situé dans le répertoire utilisateur)
+_Bootstrap_ : Télécharger "l'archive":../../../../../files/article_git/git_config.zip et copiez le contenu dans votre répertoire utilisateur puis...
+-> Edition du fichier .gitconfig (mettre vos informations personnelles!)
+-> Utilisation d'un .gitignore global (si vous ne voulez pas archiver un fichier .gitignore dans TFS) => Copie du .gitignore_global( ou celui de "GitHub":https://github.com/github/gitignore )
+
+* Par ligne de commande
+Les configurations necessaires pour faire fonctionner Git: 
+
+bc. git config --global user.name "Ton Nom"
 git config --global user.email ton_mail@valtech.fr
 
-Les configuration necessaires pour faire fonctionner Git sous Windows!: 
-git config --global core.ignorecase true
+Les configurations nécessaires pour faire fonctionner Git sous Windows!: 
+
+bc. git config --global core.ignorecase true
 git config --global core.autocrlf false
 
-3.Depuis GitExtension
+Consultation de la liste des configurations : 
+
+bc. git config -l
+git config --global -l
+git config --local -l
+
+
+* Depuis GitExtension
 Au lancement de GitExtension, verifier que le checkup est bon!
 Ou configurer en conséquence...
 Menu "Settings"->"Settings..."->Onglet "Global Settings"
-Editor : notepad++ -multiInst -notabbar
+Editor : 
+
+bc. notepad++ -multiInst -notabbar
+
 MergeTool : p4merge 
-MergeTool Path : C:/Program Files (x86)/p4merge/p4merge.exe
-MergeTool command : "C:/Program Files (x86)/p4merge/p4merge.exe" "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+MergeTool Path : 
+
+bc. C:/Program Files (x86)/p4merge/p4merge.exe
+
+MergeTool command : 
+
+bc. "C:/Program Files (x86)/p4merge/p4merge.exe" "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
+
 Difftool : p4merge
-Difftool Path : C:/Program Files (x86)/p4merge/p4merge.exe
-Difftool command : "C:/Program Files (x86)/p4merge/p4merge.exe" "$LOCAL" "$REMOTE"
+Difftool Path : 
 
-Rappels sur Git!
-================
+bc. C:/Program Files (x86)/p4merge/p4merge.exe
+
+Difftool command : 
+
+bc. "C:/Program Files (x86)/p4merge/p4merge.exe" "$LOCAL" "$REMOTE"
+
+
+h2. 3.Rappels sur Git!
+
 Git est :
-- un gestionnaire de contenu (et non de différence!)
-- stocké sous la forme d'un graphe acyclique d'objets
-- accessible avec des références
+* un gestionnaire de contenu (et non de différence!)
+* stocké sous la forme d'un graphe acyclique d'objets ou DAG(Directed Acyclic Graph)
+* accessible avec des références
 
-Toute manipulation de Git ne fait que manipuler ce graphe (Ne jamais l'oublier et essayer de visualiser cela!!)
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0315-tn.png(Exemple de graphe acyclique --historique du dépot--)! |
+|=. _Exemple de graphe acyclique représentant l'historique du dépot_ |
+
+Toute manipulation de Git ne fait que manipuler ce graphe... (Ne jamais l'oublier et essayer de visualiser cela!!)
+...en ne faisant qu'ajouter des commits!
+
+h2. 4.Présentation de GitExtension
+
+table{width:100%}.
+|=. !{width: 509px; height: 334px;}http://gitextensions.googlecode.com/files/commitlog205.png! |
+|=. _Interface de GitExtension montrant le DAG d'historique du dépot_ |
+
+Démo...
+
+* Consultation du graphe de commits (diff)
+* Zone de staging , ajout de fichiers, de lignes
+* Message de commits, templates, workitems, commit local, amend
+* Stash, Merge, Rebase
+* Fetch, Fetch et Rebase, Commit 
+* Historique (blame)
+
+h2. 5.Utilisation de Git-TFS:
+
+_Note :
+* On pourra tester toutes les commandes git-tfs indiquées en utilisant le projet "valtechgittfs" disponible sur "Codeplex":http://valtechgittfs.codeplex.com/
+Pour cela, on pourra utiliser le compte utilisateur 'vtccds' (mot de passe:vtccds)_
+* Attention : Lors de l'intéraction avec le serveur TFS de Codeplex, le login à fournir est de la forme (sans les crochets!): [LoginCodePlex]_cp@snd 
+Le mot de passe reste celui du compte Codeplex.
+
+==<!--Destruction comptes : https://www.codeplex.com/site/contact  vtcgitcds/cdsgitvtc & vtc_cds/vtc_cds -->==
 
 
-Utilisation de Git-TFS:
-=======================
-1. Clonage du dépôt TFS
-Commande de clone du dépot TFS avec historique (conseillé!):
-git tfs clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
+h3. 5.1. Clonage du dépôt TFS
 
-Commande de clone du dépot TFS sans historique:
-git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
-ex: git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk .
+Commande de clone (dans le répertoire courant) du dépot TFS avec historique (conseillé! mais long...):
 
-Utilisation du login/mdp
-login:snd\[LoginCodePlex]_cp
-mdp:celui du compte codeplex
+bc. git tfs clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
 
-2. Récupération des commits de TFS (sans merge ni rebase dans branche master)
-git tfs fetch
+exemple:
 
-3. Création des commits locaux
+bc. git tfs clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
+
+_Note : Attention à ne cloner que le répertoire correspondant à la branche principale du projet (le tronc) et non pas tout le dépot entier!_
+
+Commande de clone (dans le répertoire courant) du dépot TFS sans historique (dernier changeset):
+
+bc. git tfs quick-clone http://monServeurTfs:8080/tfs/DepotTfs $/MonProjet/NomDuTronc .
+
+exemple:
+
+bc. git tfs quick-clone https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/trunk . --username=vtccds_cp@snd --password=vtccds
+
+Convient pour un développement ponctuel ou lorsqu'on n'a pas besoin de l'historique...
+
+
+_Note :_
+* le clone ne doit pas être fait dans un répertoire mappé avec TFS (workspace).
+* on peut partager le dépot cloné juste par copie (ou par clonage git!) à un autre développeur.
+
+h3. 5.2. Récupération des commits de TFS (sans merge ni rebase dans branche master)
+
+bc. git tfs fetch
+
+h3. 5.3. Création des commits locaux
+
 Lors des commits locaux dans Git, l'association de Workitems se fait par l'ajout des meta-données suivantes dans la description du commit
 
-git-tfs-work-item: 2198 associate //Pour associer un workitem
+bc. git-tfs-work-item: 2198 associate //Pour associer un workitem
 git-tfs-work-item: 2198 resolve //Pour clore le workitem
 
-4. Report des commits locaux sur le serveur TFS
+h3. 5.4. Report des commits locaux sur le serveur TFS
+
 Méthode facile mais déconseillée :
-git tfs ct
-Cette commande ouvre la fenêtre de commit de TFS (message + association de workitems) mais crée un commit de merge (moche et peut y avoir des conflits de merge)
+
+bc. git tfs ct
+
+Cette commande ouvre la fenêtre de commit de TFS (message + association de workitems) mais crée un commit de merge (moche et peut y avoir des conflits de merge au moment du commit :( )
 
 Méthode conseillée :
-git tfs rcheckin
-Cette commande réapplique les commits sur le serveur TFS. Nécessite d'être à jour par rapport aux commits sur TFS et d'avoir "rebasé" ses commits locaux.
-Mais nécessite de ne pas avoir de modifications dans l'espace de travail => "git stash save" puis après "git stash pop"
 
-Worklow en découlant :
-git tfs fetch ==>récupération de derniers commits du serveur
+bc. git tfs rcheckin
+
+Cette commande réapplique les commits sur le serveur TFS. Cependant, nécessite d'être à jour par rapport aux commits sur TFS et d'avoir "rebasé" ses commits locaux.
+Nécessite également de ne pas avoir de modifications dans l'espace de travail :(
+
+bc. git stash save //pour mettre les modifications de côté
+//Commit...
+git stash pop //pour récupérer les modifications mises de côté
+
+Worklow utilisé en découlant :
+
+bc. git tfs fetch ==>récupération de derniers commits du serveur
 git stash save ==>mise de côté des modifications non commitées
 git rebase tfs/default =>réapplication des commits locaux sur la dernière version de TFS (merges possibles!)
 git tfs rcheckin => réapplication des commits sur TFS
 git stash pop => réapplication des modifications non commitées
 
 Ajout d'alias pour automatiser ce workflow:
-Pour synchroniser ses modifications avec la sernière version de TFS:
-git config --global alias.tfsrebase '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git stash pop"'
-=>Utilisation: git tfsrebase
+Pour synchroniser ses modifications avec la dernière version de TFS:
+
+bc. git config --global alias.tfsrebase '!sh -c "git tfs fetch && git stash save && git rebase tfs/default && git stash pop"'
+
+->Utilisation: git tfsrebase
 
 Pour commiter sur TFS:
-git config --global alias.tfscommit '!sh -c "git tfs fetch ; git stash save ; git rebase tfs/default ; git tfs rcheckin ; git stash pop"'
-=>Utilisation: git tfscommit
 
-Scripts GitExtension:
----------------------
-Il peut être pratique de créer dans GitExtension les scripts decrit ci-dessous ensuites disponibles par un clic droit dans le Browser de GitExtension.
-Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs séparées par le '/' :
+bc. git config --global alias.tfscommit '!sh -c "git tfs fetch && git stash save && git rebase tfs/default && git tfs rcheckin && git stash pop"'
 
-Tfs Fetch (Tronc)/git/tfs fetch
-Tfs commit (Tronc/rcheckin)/git/tfs rcheckin
-Rebase on Last Tfs/git/tfsrebase
-Tfs commit (Tronc) All/git/tfscommit
-Tfs commit (Tronc)/git/tfs ct
+->Utilisation: git tfscommit
 
-Tfs Fetch (Branche)/bash/-c "git tfs fetch -i $(echo {sRemoteBranch} | sed 's/tfs\///')"
-TODO intégration 'tfsrebase' & 'tfscommit' dans GitExtension pour gérer les branches
+h3. 5.5.Scripts GitExtension:
 
-Création d'une branche de TFS:
-------------------------------
-Solution Facile :
-- Créer un nouveau dépot Git avec la seconde branche (cf clone vu précédement)
-- Inconvénients : on ne peut pas backporter des corrections
+Il peut être pratique de créer dans GitExtension les scripts décrit ci-dessous; ensuite disponibles par un clic droit dans le Browser de GitExtension.
+Pour cela, allez dans le menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis par les valeurs de chaque ligne :
+
+table{width:100%}.
+|_. Name|_. Cmd.|_. Arguments|
+|Tfs(Tronc)> Fetch|@git@|@tfs fetch@|
+|Tfs(Tronc)> Fetch and Rebase|@git@|@tfsrebase@|
+|Tfs(Tronc)> Commit|@git@|@tfscommit@|
+
+Pour info mais non utile:
+
+table{width:100%}.
+|_. Name|_. Cmd.|_. Arguments|
+|Tfs(Tronc)> Commit|@git@|@tfs rcheckin@|
+|Tfs(Tronc)> Commit Visuel|@git@|@tfs ct@|
+
+
+h3. 5.6.Gestion d'une branche de TFS:
+
+Notes préalable : 
+* La création d'une branche doit toujours être effectuée avec TFS. Dès sa création, on peut ensuite la récupérer avec git-tfs et travailler avec.
+* Rien n'empêche le développeur de créer des branches locales avec Git mais si une branche doit être partagée par tous les développeurs, alors la branche doit être créé préalablement sur TFS.
+
+Récupération d'une branche TFS...
+Solution déconseillée :
+* Créer un nouveau dépot Git avec la seconde branche (cf clone vu précédement)
+* Inconvénients : on ne peut pas backporter des corrections et voir les différences entre les branches!
 
 Solution Plus convenable:
-=> cf script git-tfs-branch.sh ( ou https://gist.github.com/3760810 ou https://github.com/git-tfs/git-tfs/issues/172 ):
-sh ./git-tfs-branch.sh http://myTfsServer:8080/tfs/Repository $/MyProject/MyTFSBranch myBranch
-Note : Pour le nom "myBranch", éviter absolument les '.' et ' '
-ex : sh ./git-tfs-branch.sh https://tfs.codeplex.com:443/tfs/TFS16 $/valtechgittfs/branche1 branche1
+Utiliser la customisée de git-tfs contenant la commande "init-branch" :
 
-Copie du script dans le répertoire binaires de Git, puis :
-git config --global alias.tfsbranch '!sh git-tfs-branch.sh'
-Utilisation:
-git tfsbranch $/valtechgittfs/branche1 branche1 16877
+bc. git tfs init-branch $/MyProject/MyTFSBranch //Pour récupérer une branche spécifique
+git tfs init-branch --all //Pour récupérer toutes les branches existantes
 
+bc. ex :
+git tfs init-branch $/valtechgittfs/branche1
 
 Récupération des commits d’une branche:
-git tfs fetch -i branche1
+
+bc. git tfs fetch -i branche1
 
 Commiter sur une branche TFS:
-git tfs rcheckin -i branche1
 
-Travailler avec les shelvesets
-------------------------------
+bc. git tfs rcheckin -i branche1
+
+Ajout d'alias pour automatiser le workflow précédent avec des branches:
+Pour synchroniser ses modifications avec la dernière version de la branche sur TFS:
+
+Création de l'alias git :
+
+bc. git config --global alias.tfsrebasebranch '!sh -c "git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git stash pop"'
+
+Utilisation:  git tfsrebasebranch branche1
+
+Pour commiter sur la brance sur TFS:
+
+Création de l'alias git :
+
+bc. git config --global alias.tfscommitbranch '!sh -c "git tfs fetch -i $1 && git stash save && git rebase tfs/$1 && git tfs -i $1 rcheckin && git stash pop"'
+
+Utilisation: git tfscommitbranch branche1
+
+h3. 5.7.Scripts GitExtension (suite):
+
+Menu "Settings"->"Settings..."->Onglet "Scripts" et ajoutez un ligne où on remplira les 3 champs requis :
+
+|_. Name|_. Cmd.|_. Arguments|
+|Tfs(Branche)> Fetch|@sh@|<code>-c "git tfs fetch -i $(echo {sRemoteBranch} </code>&#124;<code> sed 's/tfs\///')"</code> |
+|Tfs(Branche)> Fetch and rebase|@sh@|<code>-c "git tfsrebasebranch $(echo {sRemoteBranch} </code>&#124;<code> sed 's/tfs\///')"</code> |
+|Tfs(Branche)> Commit|@sh@|<code>-c "git tfscommitbranch $(echo {sRemoteBranch} </code>&#124;<code> sed 's/tfs\///')"</code> |
+
+Note: Pour les utiliser, bien faire attention à cliquer sur la ligne du commit où se trouve la branche distante 'tfs/maBranche' (en vert, dans GitExtension)
+
+Pour info mais non utile:
+
+|_. Name|_. Cmd.|_. Arguments|
+|Tfs(Branche)> Commit|@sh@|<code>-c "git tfs rcheckin -i $(echo {sRemoteBranch} </code>&#124;<code> sed 's/tfs\///')"</code> |
+
+h3. 5.8.Travailler avec les shelvesets
+
 Liste de ses commits réservés
-git tfs shelve-list
+
+bc. git tfs shelve-list
 
 Ceux d'un autre utilisateur:
-git tfs shelve-list -u LOGIN_UTILISATEUR
+
+bc. git tfs shelve-list -u LOGIN_UTILISATEUR
 
 Créer une branche à partir d'un shelveset:
-git tfs unshelve MonShelveset MaBranche
+
+bc. git tfs unshelve MonShelveset MaBranche
 
 Créer un commit réservé de la branche courante:
-git tfs shelve MonShelveset
+
+bc. git tfs shelve MonShelveset
 
 Avantage de la branche Git sur le shelveset TFS :
-- on peut faire plusieurs commits
-- on connait le commit parent et voit exactement les modifications faites (là ou TFS présente seulement un état de fichier et on ne sait pas comment il serait mergé!)
-- mergeable plus facilement (moins sensible au modifications) 
+* on peut faire plusieurs commits
+* on connait le commit parent et voit exactement les modifications faites (là ou TFS présente seulement un état de fichier et on ne sait pas comment il serait mergé!)
+* mergeable plus facilement (moins sensible au modifications) 
 
-Utilisation de Git
-==================
-- Modification des commits existants (pour par ex. rajouter l'association de workitems!)
-git rebase -i HEAD~n (avec 'n' à remplacer par le nombre de commit qu'on veut réécrire)
-Note: Ne pas modifier des commits déjà partagés!!!!!!
+h2. 6.Utilisation de Git
 
-- Historique des opérations (et réparation des erreurs!) : 
-git reflog => voire l'historique des modification
+* *Règle de Base : Ne JAMAIS modifier des commits déjà partagés!!!!!!*
+
+* Mise de coté des fichiers modifiés de l'espace de travail (fonctionne comme une pile)
+
+bc. git stash save //pour mettre de côté
+git stash pop //pour récupérer le dernier stash mis de côté
+
+* Reset d'une branche à un certain commit (Mixed/Hard)
+
+* Merge / Rebase
+
+*Le merge :*
+# crée un commit supplémentaire pour réunir les 2 branches.
+# Il permet de matérialiser l'introduction d'une fonctionnalité dans une branche.
+# Cette opération peut être réalisée avec des fichiers modifiés dans l'espace de travail.
+
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0317-tn.png! |
+|=. _le DAG après un merge : le commit C6 est un commit de merge_ |
+
+
+*Le rebase :*
+# réapplique les commit d'une branche sur un commit.
+# Il permet d'avoir un historique linéaire.
+# Cette opération ne peut être réalisée avec des fichiers modifiés dans l'espace de travail (nécessité de faire un stash auparavant).
+
+table{width:100%}.
+|=. !http://git-scm.com/figures/18333fig0329-tn.png! |
+|=. _le DAG après un rebase : le commit C3 est réappliqué sur la branche master..._ |
+
+* J'ai commité dans le tronc alors que je voulais faire une branche
+
+* un bug à résoudre rapidement alors que je suis en plein développement
+
+* Modification des commits existants (pour par ex. rajouter l'association de workitems!)
+
+bc. git rebase -i HEAD~n (avec 'n' à remplacer par le nombre de commit qu'on veut réécrire)
+
+Attention : Ne pas enfreindre la règle de base!!!
+
+* Historique des opérations (et réparation des erreurs!) : 
+
+bc. git reflog => voire l'historique des modification
 git branch MaBranche d995afd => creation d'une branche sur un commit (en indiquant son sha1)
 
-Aperçu de Git-TF
-================
-- C'est du Java
-- Attention à l'option --deep
-- Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser un GitExtension)
- et même association de workitems pour TOUS les commits (si utilisation de l'option --deep)
+* Astuce: Git ne fait qu'ajouter des commits et n'en détruie AUCUN! (sauf lors du passage du Garbage Collector tous les 30 jours pour effacer ceux non utilisés).
+ Donc avant de faire une opération dont vous n'avez pas l'habitude, vous avez juste à créer une branche là où vous êtes qui vous servira de sauvegarde!
+ Et à l'effacer quand vous avez réussi...
+ 
+* Trouver un commit fautif : Bisect !
 
-Retour d'expérience
-===================
-Avantages:
-- Connaissance à tout instant de quelle version on utilise localement
-- Branches et cimmits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
-- Meilleur connaissance des modifications des autres utilisateurs (visualisation de l'historique + diffs)
-- BEAUCOUP plus grande souplesse de développement et commit
-- Remplacement du shelving par les branches ( et on peut faire plusieurs commits)
-- Commit de Revert
-- Bisect : trouver une régression facilement en testant les commits successivement par dichotomie
-- Cherry Picking (prendre un commit intérressant d'une branche et l'appliquer sur la branche actuelle)
-- Meilleur Historique
-- Plus de mode connecté/déconnecté de TFS :D
-- Backport de commit entre branches plus facile
+h2. 7. Aperçu de Git-TF
 
-Inconvénient:
-- Creation des branches TFS un peu difficile
-- Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs. Non présent sur un serveur Git...)
-- (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
+* Par défaut, création d'un seul commit de merge (utiliser l'option &ndash;&ndash;deep pour réappliquer les commits locaux sur le serveur TFS) et perte des messages de commit (sauf le dernier)
+* Association des workitems dans la ligne de commande (donc pas de possibilité d'utiliser depuis une GUI :( )
+ et même association de workitems pour TOUS les commits (si utilisation de l'option &ndash;&ndash;deep. Et apparement il y aurait un bug :( )
+* Pas de gestion des branches (un clone, donc un dépot par branche)
+* C'est du Java
 
-Conclusion
+h2. 8. Retour d'expérience
+
+h3. Avantages:
+* Connaissance à tout instant de quelle version on utilise localement
+* Branches et commits locaux (expérimentation, retour en arrières, meilleur développement, baby steps,...)
+* Meilleur connaissance des modifications des autres utilisateurs (visualisation de l'historique + diffs)
+* BEAUCOUP plus grande souplesse de développement et de commit (commit de parties de fichiers!)
+* Remplacement du shelving par les branches ( et on peut faire plusieurs commits)
+* Commit de Revert
+* Bisect : trouver une régression facilement en testant les commits successivement par dichotomie
+* Cherry Picking (prendre un commit intérressant d'une branche et l'appliquer sur la branche actuelle)
+* Meilleur Historique
+* Plus de mode connecté/déconnecté de TFS :D
+* Backport de commit entre branches plus facile
+* Visual Studio est plus rapide car il n'a pas à contacter le serveur TFS pour extraire les fichiers en modifications (ainsi que beaucoup d'autres actions qui sont faites maintenant localement : blame, diff, ...)
+
+h3. Inconvénient:
+* Ticket d'entrée légèrement plus important (il faut comprendre/visualiser les manipulations du DAG)
+* Rechargement des fichiers et projets plus souvent que sous TFS (à cause de la glue Git-tfs qui créé les commits sur TFS, les récupère et fait un rebase dessus. Non présent sur un dépot distant Git qui ne fait qu'envoyer les commits sur le dépot distant...)
+* (?) Visual Studio exclue régulièrement des fichiers App.config & Dev.config de la Solution....
+
+h2. 9. Conclusion
+
 Beaucoup d'avantages, quelques petits désagréments
 TFS est une solution d'archivage, Git est un outil servant à faciliter un développement
 
-PS : vous avez toutes les infos pour utiliser Git-tfs mais il vous reste à apprivoiser Git...
+PS :
+* Vous avez toutes les infos pour utiliser Git-tfs mais il vous reste à apprivoiser Git...
+* "Documentation":http://sixrevisions.com/resources/git-tutorials-beginners/
+* Un "petit tutoriel":http://try.github.com/ assez marrant pour apprendre les commandes de base de git (et voir comment elles sont mieux pensées que celles de TFS ;) )
+
+==<!--Introduction à Git par David Gageot : Git, la gestion de configuration qui vous veut du bien -->==
+==<!--Code freeze, merges douloureux, installation et administration d'un serveur, sauvegardes fastidieuses, perte de données, branches coûteuses, obstacle au refactoring, cycles de build trop longs… Ces mots sont-ils pour vous synonymes de Gestion de Configuration ? Vous avez appris à vivre en couple avec un outil en ignorant volontairement ses défauts, mais ils se rappellent régulièrement à vous ? Découvrez à travers des cas d'utilisation quotidiens comment Git sait se faire oublier et vous faire gagner beaucoup de temps. Vous allez aimer cet outil avec une administration proche de zéro, ne nécessitant pas de backup, utilisable en moins de cinq minutes sur une clef usb, un simple disque partagé, en serveur ou en mode SAAS. Les équipes agiles, seront « accros » de l'outil sachant se faire oublier lors de refactoring de code massifs et permettant l'intégration continue sans serveur. Les équipes distribuées apprécieront les branches locales, le cherry-picking et les performances de git. Vous êtes build 
+manager en charge des branches et des code freezes ? Désolé, vous venez de perdre votre job.-->==
+
+==<!--4 debug -->== 
+
+
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+test fetch workitems... 
+Local date is [2013-01-12 19:25:16.029] 
+Local date is [2013-01-13 00:05:13.652] 
+Local date is [2013-01-13 00:14:48.486] 
+Local date is [2013-01-13 00:36:57.614] 
+Local date is [2013-01-13 15:32:22.250] 
+Merge! : Local date is [2013-01-13 17:48:01.258] 
+Merge! : Local date is [2013-01-21 23:01:18.250] 
+Merge! : Local date is [2013-01-21 23:08:37.227] 
+Merge! : Local date is [2013-01-21 23:01:20.288] 
+Merge! : Local date is [2013-01-21 23:01:21.834] 
+rcheckin quick! : Local date is [2013-01-21 23:25:30.096] 
+Merge! : Local date is [2013-01-21 23:01:23.333] 
+rcheckin! : Local date is [2013-01-22 00:02:34.529] 
+rcheckin quick! : Local date is [2013-01-21 23:59:18.937] 
+rcheckin! : Local date is [2013-01-22 00:28:47.547] 
+rcheckin quick! : Local date is [2013-01-21 23:59:22.348] 
+rcheckin quick! : Local date is [2013-01-21 23:59:26.671] 
