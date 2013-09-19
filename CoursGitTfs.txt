@@ -8,7 +8,7 @@ tags:
 - TFS
 published: true
 ---
-
+qs;dn;,sdn
 _(ou comment utiliser Git en environnement hostile!)_
 
 Le controleur de code source TFS(Team Foundation Server) est bien souvent utilisé en entreprise.
